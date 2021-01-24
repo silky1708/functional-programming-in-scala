@@ -1,5 +1,8 @@
 package example
 
+import scala.math.Integral.Implicits.infixIntegralOps
+import scala.math.Numeric.Implicits.infixNumericOps
+
 object Lists {
 
   /**
@@ -22,7 +25,18 @@ object Lists {
    * @param xs A list of natural numbers
    * @return The sum of all elements in `xs`
    */
-  def sum(xs: List[Int]): Int = ???
+  def sum(xs: List[Int]): Int ={
+//    var sumo = 0
+//    var i = 0
+//    while(i < xs.length){
+//      sumo = sumo + xs[i]
+//      i = i+1
+//    }
+//    sumo
+    xs.sum
+  }
+
+
 
   /**
    * This method returns the largest element in a list of integers. If the
@@ -37,5 +51,17 @@ object Lists {
    * @return The largest element in `xs`
    * @throws java.util.NoSuchElementException if `xs` is an empty list
    */
-  def max(xs: List[Int]): Int = ???
+  def max(xs: List[Int]): Int = {
+//    var maxm  = xs[0]
+//    var i = 1
+//    while(i < xs.length){
+//      if(xs[i] > maxm){
+//        maxm = xs[i]
+//
+//      }
+//      i= i+1
+//    }
+//    maxm
+    xs.max
+  }
 }
