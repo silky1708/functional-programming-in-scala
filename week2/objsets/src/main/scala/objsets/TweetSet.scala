@@ -1,7 +1,5 @@
 package objsets
 
-import TweetReader._
-
 /**
  * A class to represent tweets.
  */
@@ -41,7 +39,7 @@ abstract class TweetSet extends TweetSetInterface {
    * Question: Can we implment this method here, or should it remain abstract
    * and be implemented in the subclasses?
    */
-  def filter(p: Tweet => Boolean): TweetSet = ???
+  def filter(p: Tweet => Boolean): TweetSet = filterAcc(p, new Empty())
 
   /**
    * This is a helper method for `filter` that propagetes the accumulated tweets.
@@ -54,7 +52,7 @@ abstract class TweetSet extends TweetSetInterface {
    * Question: Should we implment this method here, or should it remain abstract
    * and be implemented in the subclasses?
    */
-  def union(that: TweetSet): TweetSet = ???
+  def union(that: TweetSet): TweetSet
 
   /**
    * Returns the tweet from this set which has the greatest retweet count.
@@ -65,7 +63,33 @@ abstract class TweetSet extends TweetSetInterface {
    * Question: Should we implment this method here, or should it remain abstract
    * and be implemented in the subclasses?
    */
-  def mostRetweeted: Tweet = ???
+  def mostRetweeted: Tweet = {
+    var maxm = 0
+    var max_tweet : Option[Tweet] = None
+    def count_max_retweet(x: Tweet) : Unit = {
+      if(x.retweets > maxm) {
+        maxm = x.retweets
+        max_tweet = Some(x)
+      }
+    }
+    this.foreach(count_max_retweet)
+    max_tweet.get
+
+  }
+
+  def leastRetweeted: Tweet = {
+    var minm = 0
+    var min_tweet : Option[Tweet] = None
+    def count_min_retweet(x: Tweet) : Unit = {
+      if(x.retweets < minm) {
+        minm = x.retweets
+        min_tweet = Some(x)
+      }
+    }
+    this.foreach(count_min_retweet)
+    min_tweet.get
+
+  }
 
   /**
    * Returns a list containing all tweets of this set, sorted by retweet count
@@ -76,7 +100,23 @@ abstract class TweetSet extends TweetSetInterface {
    * Question: Should we implment this method here, or should it remain abstract
    * and be implemented in the subclasses?
    */
-  def descendingByRetweet: TweetList = ???
+  def descendingByRetweet: TweetList = {
+//    var accum = new Empty()
+
+    var least_retweeted: Tweet = this.leastRetweeted
+    var remaining_tweets: TweetSet = this.remove(least_retweeted)
+    var result_list: TweetList = Nil
+
+    while(least_retweeted != None){
+      result_list = new Cons(least_retweeted, result_list)
+      least_retweeted = remaining_tweets.leastRetweeted
+      remaining_tweets = remaining_tweets.remove(least_retweeted)
+
+    }
+
+    result_list
+
+  }
 
   /**
    * The following methods are already implemented
@@ -107,8 +147,9 @@ abstract class TweetSet extends TweetSetInterface {
 }
 
 class Empty extends TweetSet {
-  def filterAcc(p: Tweet => Boolean, acc: TweetSet): TweetSet = ???
+  def filterAcc(p: Tweet => Boolean, acc: TweetSet): TweetSet = acc
 
+  override def union(that: TweetSet): TweetSet = that
   /**
    * The following methods are already implemented
    */
@@ -124,9 +165,12 @@ class Empty extends TweetSet {
 
 class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
 
-  def filterAcc(p: Tweet => Boolean, acc: TweetSet): TweetSet = ???
+  def filterAcc(p: Tweet => Boolean, acc: TweetSet): TweetSet = {
+    if(p(elem)) (acc incl elem) union filterAcc(p, left) union filterAcc(p, right)
+    else filterAcc(p, left) union filterAcc(p, right)
+  }
 
-
+  override def union(that: TweetSet): TweetSet = ((left union right) union that) incl elem
   /**
    * The following methods are already implemented
    */
