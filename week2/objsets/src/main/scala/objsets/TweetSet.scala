@@ -108,10 +108,31 @@ abstract class TweetSet extends TweetSetInterface {
 //        new Cons()
 //      }
 //    }
-   def descendingByRetweet: TweetList = {
-    val curr = this.mostRetweeted
-    new Cons(curr, this.remove(curr).descendingByRetweet)
+   def descendingByRetweet: TweetList = this match {
+      case Empty() => Nil
+      case NonEmpty(el, l, r) => {
+        val mostR = this.mostRetweeted
+        new Cons(mostR, this.remove(mostR).descendingByRetweet)
+      }
    }
+
+//   def descendingByRetweet_helper(list: TweetList): TweetList = try{
+//     val mostR = this.mostRetweeted
+//     descendingByRetweet_helper(new Cons(mostR, this.remove(mostR).descendingByRetweet))
+//   }
+//  catch{
+//      case x: java.util.NoSuchElementException => list
+//
+//  }
+
+//     curr match {
+//     case Empty()=> list
+//     case NonEmpty(elem, left, right)=> {
+//       val mostR = this.mostRetweeted
+//       val remaining = curr.remove(mostR)
+//       descendingByRetweet_helper(new Cons(mostR, Nil), remaining)
+//     }
+//   }
 
 
 //      val least_retweeted: Tweet =
@@ -156,8 +177,8 @@ abstract class TweetSet extends TweetSetInterface {
   def foreach(f: Tweet => Unit): Unit
 }
 
-class Empty extends TweetSet {
-  def filterAcc(p: Tweet => Boolean, acc: TweetSet): TweetSet = this
+case class Empty() extends TweetSet {
+  def filterAcc(p: Tweet => Boolean, acc: TweetSet): TweetSet = acc
 
   override def union(that: TweetSet): TweetSet = that
 
@@ -177,27 +198,65 @@ class Empty extends TweetSet {
 
 }
 
-class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
+case class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
 
   def filterAcc(p: Tweet => Boolean, acc: TweetSet): TweetSet = {
-    if(p(elem))  ((filterAcc(p, left) union filterAcc(p, right)) union (acc incl elem))
-    else (filterAcc(p, left) union filterAcc(p, right))
+    filter_helper(p, acc, this)
   }
 
-  override def union(that: TweetSet): TweetSet = (((left union right) union that) incl elem)
+  def filter_helper(p: Tweet=> Boolean, acc: TweetSet, curr: TweetSet): TweetSet = curr match {
+    case Empty() => acc
+    case NonEmpty(elem, left, right) => {
+      if(p(elem)) {
+        val acc_ = acc incl elem
+        filter_helper(p, acc_, left) union filter_helper(p, acc_, right)
 
-  def mostRetweeted: Tweet = {
-    val left_tweet = left.mostRetweeted
-    val right_tweet = right.mostRetweeted
-    val root_cnt = elem.retweets
+      }
+      else{
+        filter_helper(p, acc, left) union filter_helper(p,acc,right)
+      }
+    }
+  }
+
+  override def union(that: TweetSet): TweetSet = (left union (right union (that incl elem)))
+
+  //
+  def union_helper(thy: TweetSet, that: TweetSet): TweetSet = that match {
+    case Empty() => thy
+    case NonEmpty(elem, left, right) => {
+      val this_ = thy incl elem
+      val that_ = that remove elem
+      union_helper(this_, that_)
+    }
+  }
+
+  def mostRetweeted: Tweet = try {
+
+    val left_tweet =  this.left match {
+      case Empty() => new Tweet("", "", 0)
+      case NonEmpty(elem, left, right) => this.left.mostRetweeted
+    }
+
+    val right_tweet = this.right match {
+      case Empty() => new Tweet("","",0)
+      case NonEmpty(elem, left, right) => this.right.mostRetweeted
+    }
+
+    val root_cnt = this.elem.retweets
+
+//    println(left_tweet)
+//    println(right_tweet)
     if(root_cnt >= left_tweet.retweets && root_cnt >= right_tweet.retweets){
-      elem
+      this.elem
     }
     else if(left_tweet.retweets >= root_cnt && left_tweet.retweets >= right_tweet.retweets){
       left_tweet
     }
     else right_tweet
 
+  }
+  catch{
+    case x:NoSuchElementException => new Tweet("", "", 0)
   }
 
   /**
@@ -210,14 +269,14 @@ class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
     else true
 
   def incl(x: Tweet): TweetSet = {
-    if (x.text < elem.text) new NonEmpty(elem, left.incl(x), right)
-    else if (elem.text < x.text) new NonEmpty(elem, left, right.incl(x))
+    if (x.text < elem.text)  NonEmpty(elem, left.incl(x), right)
+    else if (elem.text < x.text)  NonEmpty(elem, left, right.incl(x))
     else this
   }
 
   def remove(tw: Tweet): TweetSet =
-    if (tw.text < elem.text) new NonEmpty(elem, left.remove(tw), right)
-    else if (elem.text < tw.text) new NonEmpty(elem, left, right.remove(tw))
+    if (tw.text < elem.text)  NonEmpty(elem, left.remove(tw), right)
+    else if (elem.text < tw.text)  NonEmpty(elem, left, right.remove(tw))
     else left.union(right)
 
   def foreach(f: Tweet => Unit): Unit = {
@@ -242,10 +301,14 @@ object Nil extends TweetList {
   def head = throw new java.util.NoSuchElementException("head of EmptyList")
   def tail = throw new java.util.NoSuchElementException("tail of EmptyList")
   def isEmpty = true
+
+  override def toString: String = "Nil"
 }
 
 class Cons(val head: Tweet, val tail: TweetList) extends TweetList {
   def isEmpty = false
+
+  override def toString: String = head.toString +" "+ tail.toString
 }
 
 
@@ -293,11 +356,20 @@ object GoogleVsApple {
 }
 
 object Main extends App {
-  // Print the trending tweets
-//  GoogleVsApple.trending foreach println
+
+// Print the trending tweets
+// GoogleVsApple.trending foreach println
 
 
-  val set : TweetSet = new NonEmpty(new Tweet("silky", "hey i am on twitter", 20), new NonEmpty(new Tweet("anshu", "ah i like google", 13), new Empty(), new Empty()), new NonEmpty(new Tweet("suhana", "kgazab ho gya", 15), new Empty(), new Empty()))
-  set filter (x => x.retweets >= 13)
+  val set : TweetSet = NonEmpty(new Tweet("silky", "hey i am on twitter", 20), new NonEmpty(new Tweet("anshu", "ah i like google", 13), new Empty(), new Empty()), new NonEmpty(new Tweet("suhana", "kgazab ho gya", 15), new Empty(), new Empty()))
+  val set2: TweetSet = NonEmpty(new Tweet("Don", "I am Don", 200), Empty(), Empty())
+  val uni = set union set2
+  println(uni+"\n")
+
+  println(uni filter (x => x.retweets >= 20))
+  println("")
+  println(uni.mostRetweeted)
+  println("")
+  println(uni.descendingByRetweet)
 
 }
