@@ -1,7 +1,0 @@
-[debug] Packaging E:\Coursera-Scala\week3\patmat\target\scala-2.13\progfun1-patmat_2.13-0.1.0-SNAPSHOT-sources.jar ...
-[debug] Input file mappings:
-[debug] 	patmat\Huffman.scala
-[debug] 	  E:\Coursera-Scala\week3\patmat\src\main\scala\patmat\Huffman.scala
-[debug] 	patmat\HuffmanInterface.scala
-[debug] 	  E:\Coursera-Scala\week3\patmat\src\main\scala\patmat\HuffmanInterface.scala
-[debug] Done packaging.
