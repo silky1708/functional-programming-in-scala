@@ -1,4 +1,4 @@
-[0m[[0m[33mwarn[0m] [0m[0mE:\Coursera-Scala\week3\patmat\src\main\scala\patmat\Huffman.scala:186:99: match may not be exhaustive.[0m
+[0m[[0m[33mwarn[0m] [0m[0mE:\Coursera-Scala\week3\patmat\src\main\scala\patmat\Huffman.scala:187:99: match may not be exhaustive.[0m
 [0m[[0m[33mwarn[0m] [0m[0mIt would fail on the following input: List((x: Huffman.this.Bit forSome x not in (0, 1)))[0m
 [0m[[0m[33mwarn[0m] [0m[0m  private def helper_decode(tree: CodeTree, bits: List[Bit], entire_tree: CodeTree): List[Char] = bits match {[0m
 [0m[[0m[33mwarn[0m] [0m[0m                                                                                                  ^[0m

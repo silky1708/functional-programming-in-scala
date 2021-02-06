@@ -11,3 +11,10 @@ submit mt1180769@iitd.ac.in E1Bl2CLagNZ0lxDf
 exit
 ;set _root_.scala.collection.Seq(historyPath := None,shellPrompt := { _ => "" },SettingKey[_root_.scala.Option[_root_.sbt.File]]("sbtStructureOutputFile") in _root_.sbt.Global := _root_.scala.Some(_root_.sbt.file("C:/Users/silky/AppData/Local/Temp/sbt-structure.xml")),SettingKey[_root_.java.lang.String]("sbtStructureOptions") in _root_.sbt.Global := "download, resolveClassifiers");apply -cp "C:/Users/silky/AppData/Roaming/JetBrains/IdeaIC2020.2/plugins/Scala/repo/org.jetbrains/sbt-structure-extractor/scala_2.12/sbt_1.0/2018.2.1+4-88400d3f/jars/sbt-structure-extractor.jar" org.jetbrains.sbt.CreateTasks;*/*:dumpStructure
 exit
+;set _root_.scala.collection.Seq(historyPath := None,shellPrompt := { _ => "" },SettingKey[_root_.scala.Option[_root_.sbt.File]]("sbtStructureOutputFile") in _root_.sbt.Global := _root_.scala.Some(_root_.sbt.file("C:/Users/silky/AppData/Local/Temp/sbt-structure1.xml")),SettingKey[_root_.java.lang.String]("sbtStructureOptions") in _root_.sbt.Global := "download, resolveClassifiers");apply -cp "C:/Users/silky/AppData/Roaming/JetBrains/IdeaIC2020.3/plugins/Scala/repo/org.jetbrains/sbt-structure-extractor/scala_2.12/sbt_1.0/2020.3/jars/sbt-structure-extractor.jar" org.jetbrains.sbt.CreateTasks;*/*:dumpStructure
+exit
+submit mt1180769@iitd.ac.in PkWvWK5lSaHbifS9
+submit mt1180769@iitd.ac.in HoI6yIONqmC6Wp2X
+submit mt1180769@iitd.ac.in xDgIJQHERWBGjEcS
+submit mt1180769@iitd.ac.in xVCdQ8B2ZJMnXEaJ
+exit
