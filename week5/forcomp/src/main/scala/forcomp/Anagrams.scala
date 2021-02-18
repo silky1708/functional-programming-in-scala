@@ -33,10 +33,19 @@ object Anagrams extends AnagramsInterface {
    *
    *  Note: you must use `groupBy` to implement this method!
    */
-  def wordOccurrences(w: Word): Occurrences = ???
+  def wordOccurrences(w: Word): Occurrences = {
+    val charString: Map[Char, List[Char]] = w.toLowerCase.toList.groupBy(c => c)
+    val charCount = for(ch <- charString.keys) yield {
+      (ch, charString(ch).length)
+    }
+    charCount.toList.sortBy(l => l._1)
+  }
 
   /** Converts a sentence into its character occurrence list. */
-  def sentenceOccurrences(s: Sentence): Occurrences = ???
+  def sentenceOccurrences(s: Sentence): Occurrences = {
+    val allChars: String = s.flatMap(word => word.toList).toString()
+    wordOccurrences(allChars)
+  }
 
   /** The `dictionaryByOccurrences` is a `Map` from different occurrences to a sequence of all
    *  the words that have that occurrence count.
@@ -53,10 +62,19 @@ object Anagrams extends AnagramsInterface {
    *    List(('a', 1), ('e', 1), ('t', 1)) -> Seq("ate", "eat", "tea")
    *
    */
-  lazy val dictionaryByOccurrences: Map[Occurrences, List[Word]] = ???
+  lazy val dictionaryByOccurrences: Map[Occurrences, List[Word]] = {
+    val dictOccurrence: List[(Word, Occurrences)] = for(word <- dictionary) yield {
+      (word, wordOccurrences(word))
+    }
+    dictionary.groupBy(w => dictOccurrence.filter(pair => pair._1==w).head._2)
+
+  }
 
   /** Returns all the anagrams of a given word. */
-  def wordAnagrams(word: Word): List[Word] = ???
+  def wordAnagrams(word: Word): List[Word] = {
+    val occurrenceOfWord: Occurrences = wordOccurrences(word)
+    dictionaryByOccurrences.find(pair => pair._1 == occurrenceOfWord).head._2
+  }
 
   /** Returns the list of all subsets of the occurrence list.
    *  This includes the occurrence itself, i.e. `List(('k', 1), ('o', 1))`
@@ -81,6 +99,11 @@ object Anagrams extends AnagramsInterface {
    *  in the example above could have been displayed in some other order.
    */
   def combinations(occurrences: Occurrences): List[Occurrences] = ???
+//    val totalComb = occurrences.map(pair => pair._2+1).product
+//    val bitVector = List.fill(0)(occurrences.length)
+
+//    for()
+
 
   /** Subtracts occurrence list `y` from occurrence list `x`.
    *
