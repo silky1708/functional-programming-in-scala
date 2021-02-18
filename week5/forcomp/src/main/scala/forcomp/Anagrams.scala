@@ -43,8 +43,9 @@ object Anagrams extends AnagramsInterface {
 
   /** Converts a sentence into its character occurrence list. */
   def sentenceOccurrences(s: Sentence): Occurrences = {
-    val allChars: String = s.flatMap(word => word.toList).toString()
-    wordOccurrences(allChars)
+    val allChars: List[Char] = s.flatMap(word => word.toList)
+//    println(allChars.mkString)
+    wordOccurrences(allChars.mkString)
   }
 
   /** The `dictionaryByOccurrences` is a `Map` from different occurrences to a sequence of all
@@ -62,12 +63,17 @@ object Anagrams extends AnagramsInterface {
    *    List(('a', 1), ('e', 1), ('t', 1)) -> Seq("ate", "eat", "tea")
    *
    */
+
+//  val dictionary = List("My", "Cats", "tacs", "Dogs", "scat", "Playing")
   lazy val dictionaryByOccurrences: Map[Occurrences, List[Word]] = {
     val dictOccurrence: List[(Word, Occurrences)] = for(word <- dictionary) yield {
       (word, wordOccurrences(word))
     }
     dictionary.groupBy(w => dictOccurrence.filter(pair => pair._1==w).head._2)
 
+//    val occurrenceList = dictionary.map(word => wordOccurrences(word))
+//    val dictOccur = occurrenceList.map(occur => (occur, dictionary.filter(w => wordOccurrences(w)==occur))).toMap
+//    dictOccur
   }
 
   /** Returns all the anagrams of a given word. */
@@ -115,7 +121,16 @@ object Anagrams extends AnagramsInterface {
    *  Note: the resulting value is an occurrence - meaning it is sorted
    *  and has no zero-entries.
    */
-  def subtract(x: Occurrences, y: Occurrences): Occurrences = ???
+  def subtract(x: Occurrences, y: Occurrences): Occurrences = {
+    val result: List[(Char, Int)] = x.map(xpair => y.filter(ypair => ypair._1==xpair._1) match {
+      case Nil => xpair
+      case pair::Nil if (pair._2 < xpair._2) => (xpair._1, xpair._2-pair._2)
+      case _ => ('X', -1)
+    }).filter(pa => pa._2 > 0)
+
+    result
+
+  }
 
   /** Returns a list of all anagram sentences of the given sentence.
    *
@@ -179,3 +194,15 @@ object Dictionary {
     }
   }
 }
+
+//object Main extends App{
+////  val word: String = "MyCatsAndDogsArePlaying"
+////  println(Anagrams.wordOccurrences(word))
+////  val sent = List("My", "Cats", "and", "Dogs", "Are", "Playing")
+////  println(Anagrams.sentenceOccurrences(sent))
+////  println(Anagrams.dictionaryByOccurrences)
+////  println(Anagrams.wordAnagrams("cats"))
+//  println(Anagrams.dictionaryByOccurrences)
+//  println(Anagrams.wordAnagrams("cats"))
+//
+//}
